@@ -26,3 +26,20 @@ func GetProducts(c *gin.Context) {
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "products", products)
 }
+
+func GetProductById(c *gin.Context) {
+	var product collections.Product
+	database, err := database.NewDatabaseConnection()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		return
+	}
+	productCollection := collections.ProductCollectionInit(database.Database)
+	product, err = productCollection.GetProductById(c.Param("id"))
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, "product", product)
+}

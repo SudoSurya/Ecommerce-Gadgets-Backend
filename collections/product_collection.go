@@ -2,7 +2,9 @@ package collections
 
 import (
 	"context"
+	"errors"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -39,4 +41,23 @@ func (ProductCollection *ProductCollection) GetAllProducts() ([]Product, error) 
 		return nil, err
 	}
 	return products, nil
+}
+
+func (ProductCollection *ProductCollection) GetProductById(productId string) (Product, error) {
+	var product Product
+	objID, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		return Product{}, err
+	}
+
+	filter := bson.M{"_id": objID}
+	err = ProductCollection.collection.FindOne(context.Background(), filter).Decode(&product)
+	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			// doc not found
+			return Product{}, errors.New("Product not found")
+		}
+		return Product{}, err
+	}
+	return product, nil
 }
