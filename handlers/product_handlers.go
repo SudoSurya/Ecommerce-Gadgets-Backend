@@ -6,6 +6,7 @@ import (
 
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/collections"
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/database"
+	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/models"
 	"github.com/20pa5a1210/go-todo/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +29,7 @@ func GetProducts(c *gin.Context) {
 }
 
 func GetProductById(c *gin.Context) {
-	var product collections.Product
+	var product models.Product
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")

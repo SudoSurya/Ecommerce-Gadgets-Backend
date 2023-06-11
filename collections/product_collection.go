@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2/bson"
@@ -43,11 +44,11 @@ func (ProductCollection *ProductCollection) GetAllProducts() ([]Product, error) 
 	return products, nil
 }
 
-func (ProductCollection *ProductCollection) GetProductById(productId string) (Product, error) {
-	var product Product
+func (ProductCollection *ProductCollection) GetProductById(productId string) (models.Product, error) {
+	var product models.Product
 	objID, err := primitive.ObjectIDFromHex(productId)
 	if err != nil {
-		return Product{}, err
+		return models.Product{}, err
 	}
 
 	filter := bson.M{"_id": objID}
@@ -55,9 +56,9 @@ func (ProductCollection *ProductCollection) GetProductById(productId string) (Pr
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			// doc not found
-			return Product{}, errors.New("Product not found")
+			return models.Product{}, errors.New("Product not found")
 		}
-		return Product{}, err
+		return models.Product{}, err
 	}
 	return product, nil
 }
