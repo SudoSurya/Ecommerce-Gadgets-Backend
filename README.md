@@ -20,6 +20,34 @@ go mod download
 go run main.go
 ```
 
+## Project Structure
+
+The project is organized into different components, such as routes, controllers, and models, following best practices for structuring a Go web application.
+
+``` 
+├── controllers
+│   ├── products.go
+│   └── users.go
+├── database
+│   └── database.go
+├── middlewares
+│   └── auth.go (JWT authentication)
+├── models
+│   ├── product.go
+│   └── user.go
+├── routes
+│   ├── products.go
+│   └── users.go
+├── utils
+│   ├── error.go
+│   └── response.go
+├── .gitignore
+├── go.mod
+├── go.sum
+├── main.go
+└── README.md
+```
+
 ## API Endpoints
 https://documenter.getpostman.com/view/21427214/2s93sc4sWv
 
