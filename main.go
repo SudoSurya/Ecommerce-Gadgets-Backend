@@ -31,5 +31,10 @@ func main() {
 			authGroup.GET("/profile", handlers.GetProfile)
 		}
 	}
+	products := router.Group("/products")
+	products.Use()
+	{
+		products.GET("/", handlers.GetProducts)
+	}
 	router.Run(":8080")
 }
