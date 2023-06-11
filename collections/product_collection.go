@@ -3,6 +3,7 @@ package collections
 import (
 	"context"
 	"errors"
+	"math"
 
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -61,4 +62,17 @@ func (ProductCollection *ProductCollection) GetProductById(productId string) (mo
 		return models.Product{}, err
 	}
 	return product, nil
+}
+
+func (ProductCollection *ProductCollection) GetProductByPage(page int, pageSize int) ([]Product, error) {
+	mockProducts, err := ProductCollection.GetAllProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	startIndex := (page - 1) * pageSize
+	endIndex := math.Min(float64(startIndex+pageSize), float64(len(mockProducts)))
+
+	return mockProducts[startIndex:int(endIndex)], nil
+
 }

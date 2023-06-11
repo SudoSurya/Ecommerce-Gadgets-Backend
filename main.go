@@ -36,6 +36,7 @@ func main() {
 	{
 		products.GET("/", handlers.GetProducts)
 		products.GET("/:id", handlers.GetProductById)
+		products.GET("/page", handlers.GetProductsByPage)
 	}
 	router.Run(":8080")
 }
