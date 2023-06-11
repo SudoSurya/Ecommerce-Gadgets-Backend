@@ -25,3 +25,15 @@ https://documenter.getpostman.com/view/21427214/2s93sc4sWv
 
 The backend provides the following API endpoints for managing the application's data.
 
+### Products 
+
+- `GET /products` - Get all products
+- `GET /products/:id` - Get a single product
+- `GET /products/page?page?=1&pageSize=2` - Get products with pagination
+### Users
+
+- `POST /users/register` - Register a new user
+- `POST /users/login` - Login an existing user
+- `GET /users/profile` - Get user profile
+
+
