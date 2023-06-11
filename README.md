@@ -47,6 +47,20 @@ The project is organized into different components, such as routes, controllers,
 ├── main.go
 └── README.md
 ```
+<style>
+    * {
+        font-family: 'Cascadia Code';
+    }
+</style>
+## Technologies
+
+- [Go](https://golang.org/)
+- [Gin]
+- [MongoDB](https://www.mongodb.com/)
+- [JWT](https://jwt.io/)
+- [Postman](https://www.postman.com/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [MongoDB Compass](https://www.mongodb.com/products/compass)
 
 ## API Endpoints
 https://documenter.getpostman.com/view/21427214/2s93sc4sWv
