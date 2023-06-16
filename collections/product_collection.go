@@ -22,14 +22,15 @@ func ProductCollectionInit(database *mongo.Database) *ProductCollection {
 }
 
 type Product struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Brand       string  `json:"brand"`
-	Price       float64 `json:"price"`
-	Rating      float64 `json:"rating"`
-	Type        string  `json:"type"`
-	Image       string  `json:"image"`
-	Description string  `json:"description"`
+	Id          primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
+	ID          string             `json:"id"`
+	Name        string             `json:"name"`
+	Brand       string             `json:"brand"`
+	Price       float64            `json:"price"`
+	Rating      float64            `json:"rating"`
+	Type        string             `json:"type"`
+	Image       string             `json:"image"`
+	Description string             `json:"description"`
 }
 
 func (ProductCollection *ProductCollection) GetAllProducts() ([]Product, error) {
