@@ -77,7 +77,7 @@ func LoginUser(c *gin.Context) {
 	userCollection := collections.UserCollectionInit(database.Database)
 	user, err := userCollection.GetUserByEmail(LoginData.Email)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusUnauthorized, "Invalid Credentials")
+		utils.RespondWithError(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 	if user.Password != LoginData.Password {

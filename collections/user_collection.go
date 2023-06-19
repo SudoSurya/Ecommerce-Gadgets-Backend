@@ -2,6 +2,7 @@ package collections
 
 import (
 	"context"
+	"errors"
 
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -35,9 +36,9 @@ func (UserCollection *UserCollection) GetUserByEmail(email string) (models.User,
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			// doc not found
-			return models.User{}, nil
+			return models.User{}, errors.New("user not found")
 		}
-		return models.User{}, nil
+		return models.User{}, errors.New("user not found")
 	}
 	return user, nil
 }

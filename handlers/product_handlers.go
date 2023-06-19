@@ -62,13 +62,13 @@ func GetProductsByPage(c *gin.Context) {
 	}
 	productCollection := collections.ProductCollectionInit(database.Database)
 	products, err := productCollection.GetProductByPage(pageNumber, pageSizeNumber)
-    wholeProducts, err := productCollection.GetAllProducts()
-    if err != nil {
-        utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products")
-        log.Println(err)
-        return
-    }
-    totalProducts := len(wholeProducts)
+	wholeProducts, err := productCollection.GetAllProducts()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products")
+		log.Println(err)
+		return
+	}
+	totalProducts := len(wholeProducts)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		log.Println(err)
@@ -82,9 +82,9 @@ func GetProductsByPage(c *gin.Context) {
 
 	// Return the products as the API response
 	c.JSON(http.StatusOK, gin.H{
-		"page":     pageNumber,
-		"pageSize": pageSizeNumber,
-		"products": products,
-        "totalProducts": totalProducts,
+		"page":          pageNumber,
+		"pageSize":      pageSizeNumber,
+		"products":      products,
+		"totalProducts": totalProducts,
 	})
 }
