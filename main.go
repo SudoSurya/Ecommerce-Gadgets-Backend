@@ -44,5 +44,10 @@ func main() {
 		products.GET("/:id", handlers.GetProductById)
 		products.GET("/page", handlers.GetProductsByPage)
 	}
+	cart := router.Group("/cart")
+	cart.Use()
+	{
+		cart.GET("/all", handlers.GetCartItems)
+	}
 	router.Run(":8080")
 }
