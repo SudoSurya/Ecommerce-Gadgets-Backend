@@ -45,9 +45,10 @@ func main() {
 		products.GET("/page", handlers.GetProductsByPage)
 	}
 	cart := router.Group("/cart")
-	cart.Use()
+	cart.Use(middleware.AuthMiddleware)
 	{
-		cart.GET("/all", handlers.GetCartItems)
+		cart.GET("/:username", handlers.GetCartItems)
+		cart.POST("/add/:username", handlers.AddProductToCart)
 	}
 	router.Run(":8080")
 }

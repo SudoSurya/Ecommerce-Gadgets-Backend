@@ -6,6 +6,7 @@ import (
 
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/collections"
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/database"
+	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/models"
 	"github.com/20pa5a1210/go-todo/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -19,15 +20,52 @@ func connectToDatabase() (*database.DatabaseConnection, error) {
 }
 
 func GetCartItems(c *gin.Context) {
+	username := c.Param("username")
 	db, err := connectToDatabase()
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
 	}
 	CartCollection := collections.CartCollectionInit(db.Database)
-	cartItems, err := CartCollection.GetCartItems()
+	cartItems, err := CartCollection.GetCartItems(username)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", cartItems)
+}
+
+func AddProductToCart(c *gin.Context) {
+	username := c.Param("username")
+	var product models.Cart
+	err := c.BindJSON(&product)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	db, err := connectToDatabase()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		return
+	}
+	CartCollection := collections.CartCollectionInit(db.Database)
+
+	existingProduct, err := CartCollection.GetProductByID(username, product.ID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if existingProduct.ID != "" {
+		utils.RespondWithError(c, http.StatusForbidden, "Product already exists")
+		return
+	}
+
+	res, err := CartCollection.AddProductToCart(username, product)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
+
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, "cartItem", res)
+
 }

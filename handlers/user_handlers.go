@@ -24,7 +24,7 @@ func CreateUser(c *gin.Context) {
 	}
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
+		utils.RespondWithError(c, http.StatusInternalServerError, "Database connection failed")
 		return
 	}
 
@@ -32,7 +32,7 @@ func CreateUser(c *gin.Context) {
 
 	existingUser, err := userCollection.GetUserByEmail(user.Email)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if existingUser.Email != "" {
@@ -42,7 +42,7 @@ func CreateUser(c *gin.Context) {
 
 	checkinguser, err := userCollection.GetUserByUsername(user.Username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if checkinguser.Username != "" {
@@ -53,6 +53,16 @@ func CreateUser(c *gin.Context) {
 	CreateUser, err := userCollection.CreateUser(user)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create user")
+		return
+	}
+	cartRepo := collections.CartCollectionInit(database.Database)
+	cartInstance := models.UserCart{
+		UserName: CreateUser.Username,
+		Cart:     []models.Cart{},
+	}
+	_, err = cartRepo.CreateCart(cartInstance)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create cart")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusCreated, "User:", CreateUser)

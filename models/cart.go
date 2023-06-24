@@ -16,3 +16,9 @@ type Cart struct {
 	Description string             `json:"description" bson:"description"`
 	Quantity    int64              `json:"quantity" bson:"quantity"`
 }
+
+type UserCart struct {
+	Id       primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
+	UserName string             `json:"username" bson:"username"`
+	Cart     []Cart             `json:"cart" bson:"cart"`
+}
