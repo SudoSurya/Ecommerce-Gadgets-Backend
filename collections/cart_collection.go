@@ -105,3 +105,39 @@ func (CartCollection *CartCollection) ClearCart(username string) error {
 	}
 	return nil
 }
+
+func (CartCollection *CartCollection) IncrementProductQuantity(username string, productId string) error {
+	objId, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		return err
+	}
+	userFilter := bson.M{"username": username, "cart._id": objId}
+
+	update := bson.M{"$inc": bson.M{"cart.$.quantity": 1}}
+	updated, err := CartCollection.collection.UpdateOne(context.Background(), userFilter, update)
+	if err != nil {
+		return err
+	}
+	if updated.ModifiedCount == 0 {
+		return errors.New("Product not found in cart")
+	}
+	return nil
+}
+
+func (CartCollection *CartCollection) DecrementProductQuantity(username string, productId string) error {
+	objId, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		return err
+	}
+	userFilter := bson.M{"username": username, "cart._id": objId}
+
+	update := bson.M{"$inc": bson.M{"cart.$.quantity": -1}}
+	updated, err := CartCollection.collection.UpdateOne(context.Background(), userFilter, update)
+	if err != nil {
+		return err
+	}
+	if updated.ModifiedCount == 0 {
+		return errors.New("Product not found in cart")
+	}
+	return nil
+}

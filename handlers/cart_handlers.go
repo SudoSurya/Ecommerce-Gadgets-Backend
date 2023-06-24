@@ -107,3 +107,47 @@ func ClearItemsFromCart(c *gin.Context) {
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", []models.Cart{})
 }
+
+func IncrementProductQuantity(c *gin.Context) {
+	username := c.Param("username")
+	productID := c.Param("productID")
+	db, err := connectToDatabase()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		return
+	}
+	CartCollection := collections.CartCollectionInit(db.Database)
+	err = CartCollection.IncrementProductQuantity(username, productID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	cartItems, err := CartCollection.GetCartItems(username)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, "cartItems", cartItems)
+}
+
+func DecrementProductQuantity(c *gin.Context) {
+	username := c.Param("username")
+	productID := c.Param("productID")
+	db, err := connectToDatabase()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		return
+	}
+	CartCollection := collections.CartCollectionInit(db.Database)
+	err = CartCollection.DecrementProductQuantity(username, productID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	cartItems, err := CartCollection.GetCartItems(username)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, "cartItems", cartItems)
+}

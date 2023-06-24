@@ -51,6 +51,8 @@ func main() {
 		cart.POST("/add/:username", handlers.AddProductToCart)
 		cart.DELETE("/remove/:username/:productID", handlers.DeleteProductFromCart)
 		cart.DELETE("/clear/:username", handlers.ClearItemsFromCart)
+		cart.PUT("/increment/:username/:productID", handlers.IncrementProductQuantity)
+		cart.PUT("/decrement/:username/:productID", handlers.DecrementProductQuantity)
 	}
 	router.Run(":8080")
 }
