@@ -33,10 +33,6 @@ func (UserCollection *UserCollection) GetUserByEmail(email string) (models.User,
 	filter := bson.M{"email": email}
 	err := UserCollection.collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			// doc not found
-			return models.User{}, nil
-		}
 		return models.User{}, nil
 	}
 	return user, nil
@@ -47,10 +43,6 @@ func (UserCollection *UserCollection) GetUserByUsername(username string) (models
 	filter := bson.M{"username": username}
 	err := UserCollection.collection.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			// doc not found
-			return models.User{}, nil
-		}
 		return models.User{}, nil
 	}
 	return user, nil

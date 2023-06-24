@@ -60,7 +60,7 @@ func CreateUser(c *gin.Context) {
 		UserName: CreateUser.Username,
 		Cart:     []models.Cart{},
 	}
-	_, err = cartRepo.CreateCart(cartInstance)
+	err = cartRepo.CreateCart(cartInstance)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create cart")
 		return

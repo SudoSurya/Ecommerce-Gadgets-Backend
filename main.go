@@ -49,6 +49,7 @@ func main() {
 	{
 		cart.GET("/:username", handlers.GetCartItems)
 		cart.POST("/add/:username", handlers.AddProductToCart)
+		cart.DELETE("/remove/:username/:productID", handlers.DeleteProductFromCart)
 	}
 	router.Run(":8080")
 }

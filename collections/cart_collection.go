@@ -2,6 +2,7 @@ package collections
 
 import (
 	"context"
+	"errors"
 
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,13 +20,13 @@ func CartCollectionInit(database *mongo.Database) *CartCollection {
 	}
 }
 
-func (CartCollection *CartCollection) CreateCart(cart models.UserCart) (models.UserCart, error) {
+func (CartCollection *CartCollection) CreateCart(cart models.UserCart) error {
 	result, err := CartCollection.collection.InsertOne(context.Background(), cart)
 	if err != nil {
-		return models.UserCart{}, err
+		return err
 	}
 	cart.Id = result.InsertedID.(primitive.ObjectID)
-	return cart, nil
+	return nil
 }
 
 func (CartCollection *CartCollection) GetCartItems(username string) ([]models.Cart, error) {
@@ -74,4 +75,23 @@ func (CartCollection *CartCollection) AddProductToCart(username string, product 
 	}
 
 	return updated, nil
+}
+
+func (CartCollection *CartCollection) DeleteProductFromCart(username string, productId string) error {
+	userFilter := bson.M{"username": username}
+	objId, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{"$pull": bson.M{"cart": bson.M{"_id": objId}}}
+	updated, err := CartCollection.collection.UpdateOne(context.Background(), userFilter, update)
+	if err != nil {
+		return err
+	}
+	if updated.ModifiedCount == 0 {
+		return errors.New("Product not found in cart")
+	}
+	return nil
+
 }

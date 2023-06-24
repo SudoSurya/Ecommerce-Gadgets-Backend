@@ -62,10 +62,32 @@ func AddProductToCart(c *gin.Context) {
 
 	res, err := CartCollection.AddProductToCart(username, product)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
-
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItem", res)
 
+}
+
+func DeleteProductFromCart(c *gin.Context) {
+	username := c.Param("username")
+	productID := c.Param("productID")
+	db, err := connectToDatabase()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		return
+	}
+	CartCollection := collections.CartCollectionInit(db.Database)
+	err = CartCollection.DeleteProductFromCart(username, productID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	remainingCartItems, err := CartCollection.GetCartItems(username)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, "cartItems", remainingCartItems)
 }
