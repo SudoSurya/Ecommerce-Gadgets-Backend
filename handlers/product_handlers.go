@@ -62,6 +62,11 @@ func GetProductsByPage(c *gin.Context) {
 	}
 	productCollection := collections.ProductCollectionInit(database.Database)
 	products, err := productCollection.GetProductByPage(pageNumber, pageSizeNumber)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return
+	}
 	wholeProducts, err := productCollection.GetAllProducts()
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products")
