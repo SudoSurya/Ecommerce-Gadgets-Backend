@@ -91,3 +91,19 @@ func DeleteProductFromCart(c *gin.Context) {
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", remainingCartItems)
 }
+
+func ClearItemsFromCart(c *gin.Context) {
+	username := c.Param("username")
+	db, err := connectToDatabase()
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		return
+	}
+	CartCollection := collections.CartCollectionInit(db.Database)
+	err = CartCollection.ClearCart(username)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, "cartItems", []models.Cart{})
+}

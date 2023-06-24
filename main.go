@@ -50,6 +50,7 @@ func main() {
 		cart.GET("/:username", handlers.GetCartItems)
 		cart.POST("/add/:username", handlers.AddProductToCart)
 		cart.DELETE("/remove/:username/:productID", handlers.DeleteProductFromCart)
+		cart.DELETE("/clear/:username", handlers.ClearItemsFromCart)
 	}
 	router.Run(":8080")
 }

@@ -95,3 +95,13 @@ func (CartCollection *CartCollection) DeleteProductFromCart(username string, pro
 	return nil
 
 }
+
+func (CartCollection *CartCollection) ClearCart(username string) error {
+	userFilter := bson.M{"username": username}
+	update := bson.M{"$set": bson.M{"cart": []models.Cart{}}}
+	_, err := CartCollection.collection.UpdateOne(context.Background(), userFilter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
