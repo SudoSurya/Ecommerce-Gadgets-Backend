@@ -24,7 +24,7 @@ func CreateUser(c *gin.Context) {
 	}
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Database connection failed")
+		utils.RespondWithError(c, http.StatusBadGateway, "Database connection failed")
 		return
 	}
 
@@ -32,27 +32,27 @@ func CreateUser(c *gin.Context) {
 
 	existingUser, err := userCollection.GetUserByEmail(user.Email)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		utils.RespondWithError(c, http.StatusNotFound, err.Error())
 		return
 	}
 	if existingUser.Email != "" {
-		utils.RespondWithError(c, http.StatusForbidden, "Email already exists")
+		utils.RespondWithError(c, http.StatusFound, "Email already exists")
 		return
 	}
 
 	checkinguser, err := userCollection.GetUserByUsername(user.Username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		utils.RespondWithError(c, http.StatusNotFound, err.Error())
 		return
 	}
 	if checkinguser.Username != "" {
-		utils.RespondWithError(c, http.StatusForbidden, "Username already exists")
+		utils.RespondWithError(c, http.StatusFound, "Username already exists")
 		return
 	}
 
 	CreateUser, err := userCollection.CreateUser(user)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create user")
+		utils.RespondWithError(c, http.StatusBadRequest, "Failed to create user")
 		return
 	}
 	cartRepo := collections.CartCollectionInit(database.Database)
@@ -62,7 +62,7 @@ func CreateUser(c *gin.Context) {
 	}
 	err = cartRepo.CreateCart(cartInstance)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create cart")
+		utils.RespondWithError(c, http.StatusBadRequest, "Failed to create cart")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusCreated, "User:", CreateUser)
@@ -81,13 +81,13 @@ func LoginUser(c *gin.Context) {
 
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
+		utils.RespondWithError(c, http.StatusBadGateway, "Internal Server Error")
 		return
 	}
 	userCollection := collections.UserCollectionInit(database.Database)
 	user, err := userCollection.GetUserByEmail(LoginData.Email)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusUnauthorized, err.Error())
+		utils.RespondWithError(c, http.StatusNotFound, err.Error())
 		return
 	}
 	if user.Password != LoginData.Password {
@@ -96,7 +96,7 @@ func LoginUser(c *gin.Context) {
 	}
 	token, err := middleware.GenerateJwt(user.Id.Hex())
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed To generate Token")
+		utils.RespondWithError(c, http.StatusBadRequest, "Failed To generate Token")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"token": token})
@@ -106,7 +106,7 @@ func GetProfile(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Internal Server Error")
+		utils.RespondWithError(c, http.StatusBadRequest, "Internal Server Error")
 		return
 	}
 
@@ -114,7 +114,7 @@ func GetProfile(c *gin.Context) {
 
 	user, err := userCollection.GetUserByID(userID.(string))
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to Fetch user")
+		utils.RespondWithError(c, http.StatusNotFound, "Failed to Fetch user")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})

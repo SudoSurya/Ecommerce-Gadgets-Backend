@@ -16,13 +16,13 @@ func GetProducts(c *gin.Context) {
 	var products []collections.Product
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
 	productCollection := collections.ProductCollectionInit(database.Database)
 	products, err = productCollection.GetAllProducts()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products")
+		utils.RespondWithError(c, http.StatusBadRequest, "Failed to get products")
 		log.Println(err)
 		return
 	}
@@ -33,13 +33,13 @@ func GetProductById(c *gin.Context) {
 	var product models.Product
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
 	productCollection := collections.ProductCollectionInit(database.Database)
 	product, err = productCollection.GetProductById(c.Param("id"))
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
@@ -57,31 +57,30 @@ func GetProductsByPage(c *gin.Context) {
 	// Retrieve products from the database based on the page and page size
 	database, err := database.NewDatabaseConnection()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to connect to database")
+		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
 	productCollection := collections.ProductCollectionInit(database.Database)
 	products, err := productCollection.GetProductByPage(pageNumber, pageSizeNumber)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 	wholeProducts, err := productCollection.GetAllProducts()
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products")
+		utils.RespondWithError(c, http.StatusBadRequest, "Failed to get products")
 		log.Println(err)
 		return
 	}
 	totalProducts := len(wholeProducts)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
-		log.Println(err)
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if len(products) == 0 {
-		utils.RespondWithError(c, http.StatusNotFound, "No products found")
+		utils.RespondWithError(c, http.StatusNoContent, "No products found")
 		return
 	}
 
