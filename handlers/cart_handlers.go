@@ -24,11 +24,12 @@ func GetCartItems(c *gin.Context) {
 	db, err := connectToDatabase()
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
+		return
 	}
-	CartCollection := collections.CartCollectionInit(db.Database)
-	cartItems, err := CartCollection.GetCartItems(username)
+	cartCollection := collections.CartCollectionInit(db.Database)
+	cartItems, err := cartCollection.GetCartItems(username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusNotFound, "Failed to get cart items")
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", cartItems)
@@ -48,11 +49,11 @@ func AddProductToCart(c *gin.Context) {
 		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
-	CartCollection := collections.CartCollectionInit(db.Database)
+	cartCollection := collections.CartCollectionInit(db.Database)
 
-	existingProduct, err := CartCollection.GetProductByID(username, product.ID)
+	existingProduct, err := cartCollection.GetProductByID(username, product.ID)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusNotFound, err.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if existingProduct.ID != "" {
@@ -60,13 +61,12 @@ func AddProductToCart(c *gin.Context) {
 		return
 	}
 
-	res, err := CartCollection.AddProductToCart(username, product)
+	res, err := cartCollection.AddProductToCart(username, product)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusNotFound, err.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItem", res)
-
 }
 
 func DeleteProductFromCart(c *gin.Context) {
@@ -77,16 +77,16 @@ func DeleteProductFromCart(c *gin.Context) {
 		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
-	CartCollection := collections.CartCollectionInit(db.Database)
-	err = CartCollection.DeleteProductFromCart(username, productID)
+	cartCollection := collections.CartCollectionInit(db.Database)
+	err = cartCollection.DeleteProductFromCart(username, productID)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusNotFound, err.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	remainingCartItems, err := CartCollection.GetCartItems(username)
+	remainingCartItems, err := cartCollection.GetCartItems(username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadRequest, "Failed to get cart items")
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", remainingCartItems)
@@ -99,10 +99,10 @@ func ClearItemsFromCart(c *gin.Context) {
 		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
-	CartCollection := collections.CartCollectionInit(db.Database)
-	err = CartCollection.ClearCart(username)
+	cartCollection := collections.CartCollectionInit(db.Database)
+	err = cartCollection.ClearCart(username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", []models.Cart{})
@@ -116,15 +116,15 @@ func IncrementProductQuantity(c *gin.Context) {
 		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
-	CartCollection := collections.CartCollectionInit(db.Database)
-	err = CartCollection.IncrementProductQuantity(username, productID)
+	cartCollection := collections.CartCollectionInit(db.Database)
+	err = cartCollection.IncrementProductQuantity(username, productID)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	cartItems, err := CartCollection.GetCartItems(username)
+	cartItems, err := cartCollection.GetCartItems(username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadRequest, "Failed to get cart items")
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", cartItems)
@@ -138,15 +138,15 @@ func DecrementProductQuantity(c *gin.Context) {
 		utils.RespondWithError(c, http.StatusBadGateway, "Failed to connect to database")
 		return
 	}
-	CartCollection := collections.CartCollectionInit(db.Database)
-	err = CartCollection.DecrementProductQuantity(username, productID)
+	cartCollection := collections.CartCollectionInit(db.Database)
+	err = cartCollection.DecrementProductQuantity(username, productID)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadGateway, err.Error())
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	cartItems, err := CartCollection.GetCartItems(username)
+	cartItems, err := cartCollection.GetCartItems(username)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusBadRequest, "Failed to get cart items")
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get cart items")
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, "cartItems", cartItems)

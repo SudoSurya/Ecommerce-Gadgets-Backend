@@ -13,14 +13,21 @@ type DatabaseConnection struct {
 }
 
 func NewDatabaseConnection() (*DatabaseConnection, error) {
+	clientOptions := options.Client().ApplyURI("mongodb+srv://suryanarayana7826:pass@cluster0.jf2vfhi.mongodb.net/?retryWrites=true&w=majority")
 
-	clientOption := options.Client().ApplyURI("mongodb+srv://suryanarayana7826:pass@cluster0.jf2vfhi.mongodb.net/?retryWrites=true&w=majority")
-	client, err := mongo.Connect(context.Background(), clientOption)
+	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		return nil, err
 	}
+
+	err = client.Ping(context.Background(), nil)
+	if err != nil {
+		return nil, err
+	}
+
 	database := client.Database("test")
 	log.Print("Connected to MongoDB!")
+
 	return &DatabaseConnection{
 		Database: database,
 	}, nil
