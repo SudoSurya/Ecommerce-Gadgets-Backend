@@ -1,7 +1,9 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/20pa5a1210/Ecommerce-Gadgets-Backend/database"
@@ -9,6 +11,7 @@ import (
 	"github.com/20pa5a1210/go-todo/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/russross/blackfriday/v2"
 )
 
 func main() {
@@ -26,6 +29,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// create a blank / routes whether its a GET  request
+
+	router.GET("/", func(c *gin.Context) {
+		readmeContent, err := ioutil.ReadFile("./README.md") // Replace "static/README.md" with the correct path to your README.md file
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read README file"})
+			return
+		}
+
+		htmlContent := blackfriday.Run(readmeContent)
+
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		c.String(http.StatusOK, string(htmlContent))
+	})
+
 	user := router.Group("/user")
 	user.Use()
 	{
