@@ -60,6 +60,7 @@ func (CartCollection *CartCollection) GetProductByID(username string, productId 
 	}
 	return product, nil
 }
+
 func (CartCollection *CartCollection) AddProductToCart(username string, product models.Cart) (models.UserCart, error) {
 	userFilter := bson.M{"username": username}
 	update := bson.M{"$push": bson.M{"cart": product}}
@@ -78,6 +79,7 @@ func (CartCollection *CartCollection) AddProductToCart(username string, product 
 }
 
 func (CartCollection *CartCollection) DeleteProductFromCart(username string, productId string) error {
+
 	userFilter := bson.M{"username": username}
 	objId, err := primitive.ObjectIDFromHex(productId)
 	if err != nil {
@@ -93,7 +95,6 @@ func (CartCollection *CartCollection) DeleteProductFromCart(username string, pro
 		return errors.New("Product not found in cart")
 	}
 	return nil
-
 }
 
 func (CartCollection *CartCollection) ClearCart(username string) error {
@@ -141,3 +142,4 @@ func (CartCollection *CartCollection) DecrementProductQuantity(username string, 
 	}
 	return nil
 }
+
